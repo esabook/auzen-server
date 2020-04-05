@@ -1,0 +1,52 @@
+buildscript {
+    ext.kotlin_version = '1.3.10' // Required for Kotlin integration
+    ext.spring_boot_version = '2.1.0.RELEASE'
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" // Required for Kotlin integration
+        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version" // See https://kotlinlang.org/docs/reference/compiler-plugins.html#spring-support
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version"
+    }
+}
+
+apply plugin: 'kotlin' // Required for Kotlin integration
+apply plugin: "kotlin-spring" // https://kotlinlang.org/docs/reference/compiler-plugins.html#spring-support
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'idea'
+
+jar {
+    baseName = 'gs-rest-service'
+    version = '0.1.0'
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // Required for Kotlin integration
+    compile "org.springframework.boot:spring-boot-starter-web"
+    compile "org.springframework.boot:spring-boot-starter-security"
+    compile "org.springframework.data:spring-data-mongodb:2.1.9.RELEASE"
+    compile "org.springframework.data:spring-data-releasetrain:Lovelace-SR9"
+    compile "org.springframework.boot:spring-boot-devtools"
+
+    compile "io.springfox:springfox-swagger2:2.9.2"
+    compile "io.springfox:springfox-swagger-ui:2.8.0"
+
+    compile "io.jsonwebtoken:jjwt-api:0.10.5"
+    runtime "io.jsonwebtoken:jjwt-impl:0.10.5"
+    runtime "io.jsonwebtoken:jjwt-jackson:0.10.5"
+
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+idea {
+    module {
+        inheritOutputDirs = false
+        outputDir = file("$buildDir/classes/kotlin/main")
+    }
+}
