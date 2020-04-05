@@ -20,7 +20,7 @@ class MongoConfig {
     @Bean
     @Throws(Exception::class)
     fun mongoTemplate(): MongoTemplate {
-        return MongoTemplate(mongo(), "test")
+        return MongoTemplate(mongo(), "auzen")
     }
 
 }

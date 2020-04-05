@@ -1,16 +1,19 @@
 package com.auzen.model
 
 import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.mapping.Document
 
-class UserModel(var account_name: String,
-                var name: String? = account_name,
-                var email: String) {
+@Document("Account")
+open class UserModel(var accountName: String,
+                     var password: String,
+                     var email: String) {
 
     @Id
     var id: String = Long.MIN_VALUE.toString()
-    var verify_token: String? = hashCode().toString()
+    var name: String? = accountName
+    var verifyToken: String? = hashCode().toString()
     var verified: Boolean = false
         set(value) {
-            field = value; verify_token = null
+            field = value; verifyToken = null
         }
 }

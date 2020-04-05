@@ -28,9 +28,11 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // Required for Kotlin integration
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+
     compile "org.springframework.boot:spring-boot-starter-web"
     compile "org.springframework.boot:spring-boot-starter-security"
-    compile "org.springframework.data:spring-data-mongodb:2.1.9.RELEASE"
+    compile "org.springframework.boot:spring-boot-starter-data-mongodb"
     compile "org.springframework.data:spring-data-releasetrain:Lovelace-SR9"
     compile "org.springframework.boot:spring-boot-devtools"
 
