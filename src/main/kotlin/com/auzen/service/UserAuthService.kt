@@ -12,7 +12,7 @@ class UserAuthService(val userRepository: UserRepository) : UserDetailsService {
     val roles = AuthorityUtils.createAuthorityList("ROLE_ADMIN", "ROLE_USER");
 
     override fun loadUserByUsername(username: String?): UserDetails {
-        val user = userRepository?.findFirstByAccountName(username.orEmpty())
+        val user = userRepository?.getUserModelByAccountName(username.orEmpty())
         return UserDetail(user, roles)
     }
 

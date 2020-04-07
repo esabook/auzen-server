@@ -29,7 +29,7 @@ class UserController {
                 val username = parsedToken
                         .getBody()
                         .getSubject()
-                val oldUser = userRepository.findFirstByAccountName(username)
+                val oldUser = userRepository.getUserModelByAccountName(username)
                 oldUser?.let {
                     return it
                 }
@@ -42,7 +42,7 @@ class UserController {
 
     @PostMapping("/auth")
     fun postAuth(@RequestBody data: AuthRequestModel): Any {
-        val oldUser = userRepository.findFirstByAccountName(data.username)
+        val oldUser = userRepository.getUserModelByAccountName(data.username)
         oldUser?.let {
             with(it) {
                 if (oldUser.verified)
@@ -56,7 +56,7 @@ class UserController {
 
     @PostMapping("/verify")
     fun postVerifyAccount(@RequestParam token: String, @RequestParam account_name: String): ResponseEntity<Any> {
-        val oldUserModel = userRepository.findFirstByVerifyTokenAndAccountName(token, account_name)
+        val oldUserModel = userRepository.getUserModelsByVerifyTokenAndAccountName(token, account_name)
         oldUserModel?.let {
             it.verified = true
             it.password = BCrypt.hashpw(it.password, BCrypt.gensalt())
@@ -78,7 +78,7 @@ class UserController {
                 email = data.email
         )
 
-        val oldUserModel = userRepository.findFirstByAccountName(data.account_name)
+        val oldUserModel = userRepository.getUserModelByAccountName(data.account_name)
         val responseModel = UserRegisterResponseModel(
                 account_name = data.account_name,
                 registered = oldUserModel != null
