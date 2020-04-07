@@ -13,12 +13,22 @@ class GlobalExceptionHandler {
     @ExceptionHandler(Exception::class)
     fun errorException(ex: Exception, req: WebRequest): ResponseEntity<Map<String, ErrorResponseModel>> {
         val errorDetail = ErrorResponseModel(
-                type = "default-500",
+                type = "Default-500",
                 title = "Internal Server Error",
                 message = ex.message,
                 instance = req.getDescription(false))
 
         return ResponseEntity(errorDetail.asMap(), HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @ExceptionHandler(ClientException::class)
+    fun errorClientException(ex: ClientException, req: WebRequest): Any {
+        val errorDetail = ErrorResponseModel(
+                type = "Error-${ex.statusCode.value()}",
+                title = ex.statusText,
+                message = ex.message,
+                instance = req.getDescription(false))
+        return ResponseEntity(errorDetail.asMap(), ex.statusCode)
     }
 
 
