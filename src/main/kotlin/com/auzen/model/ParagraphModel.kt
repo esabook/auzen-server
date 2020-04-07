@@ -1,11 +1,38 @@
 package com.auzen.model
 
-class ParagraphModel {
-    var id: Int? = hashCode()
-    var news_id: Int? = null
-    var paragraph_previous_id: Int? = null
-    var paragraph_next_id: Int? = null
-    var content: String? = null
-    var access_first_timestamp: Long = 0;
-    var access_last_timestamp: Long = 0;
-}
+import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.index.Indexed
+
+class ParagraphModel(
+        /**
+         * id ini harus unik dan mengandung informasi total karakter, total kata, total titik (kalimat),
+         * sehingga apabila terdapat informasi paragraf yang mirip dapat langsung mengambil data yang pernah disimpan
+         */
+        @Id
+        @Indexed(name = "ParagraphId", unique = true)
+        var id: String,
+        /**
+         * ID berita, {@see NewsModel#id}
+         */
+        var newsId: String,
+        /**
+         * ID paragraf sebelumnya, null jika ini adalah paragraf pertama
+         */
+        var paragraphPreviousId: Int? = null,
+        /**
+         * ID paragraf selanjutnya, null jika ini adalah pparagraf terakhir
+         */
+        var paragraphNextId: Int? = null,
+        /**
+         * berisi karakter dalam paragraf, bisa huruf, tanda baca, atau simbol baca
+         */
+        var content: String,
+        /**
+         * timestamp pengaksesan pertama kali
+         */
+        var accessFirstTime: Long,
+        /**
+         * timestamp pengaksesan terakhir kali
+         */
+        var accessLastTime: Long = 0
+)
