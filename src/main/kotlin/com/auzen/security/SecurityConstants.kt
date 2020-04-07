@@ -12,6 +12,8 @@ class SecurityConstants private constructor() {
                 "/webjars/**",
 
                 //public api
+                "/help",
+                "/error",
                 "/user/auth",
                 "/user/register",
                 "/user/verify"
