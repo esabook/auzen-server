@@ -9,8 +9,8 @@ class NewsController {
     @GetMapping("{newsId}")
     fun getInfo(@PathVariable("newsId") newsId: String): NewsResponseModel {
         val ret = NewsResponseModel()
-        ret.id = newsId.hashCode()
-        ret.url = newsId
+//        ret.id = newsId.hashCode().toString()
+//        ret.url = newsId
         return ret
     }
 
