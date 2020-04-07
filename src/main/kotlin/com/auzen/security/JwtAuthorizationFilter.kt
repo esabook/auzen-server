@@ -1,9 +1,6 @@
 package com.auzen.security
 
-import io.jsonwebtoken.ExpiredJwtException
-import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.MalformedJwtException
-import io.jsonwebtoken.UnsupportedJwtException
+import io.jsonwebtoken.*
 import io.jsonwebtoken.security.SignatureException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -35,20 +32,12 @@ class JwtAuthorizationFilter(authenticationManager: AuthenticationManager?) : Ba
     }
 
     private fun getAuthentication(request: HttpServletRequest): UsernamePasswordAuthenticationToken? {
-        val token = request.getHeader(SecurityConstants.TOKEN_HEADER)
-        if (!token.isNullOrEmpty() && token.startsWith(SecurityConstants.TOKEN_PREFIX)) {
+        val token = getToken(request)
+        if (token != null) {
             try {
-                val signingKey = SecurityConstants.JWT_SECRET.toByteArray()
-                val parsedToken = Jwts.parser()
-                        .setSigningKey(signingKey)
-                        .parseClaimsJws(token.replace("Bearer ", ""))
-                val username = parsedToken
-                        .getBody()
-                        .getSubject()
-                val authorities = (parsedToken.getBody()
-                        .get("rol") as List<*>).stream()
-                        .map { authority: Any? -> SimpleGrantedAuthority(authority as String?) }
-                        .collect(Collectors.toList<GrantedAuthority>())
+                val username = getUserName(token)
+                val authorities = getAuthority(token)
+
                 if (!username.isNullOrEmpty()) {
                     return UsernamePasswordAuthenticationToken(username, null, authorities)
                 }
@@ -69,5 +58,35 @@ class JwtAuthorizationFilter(authenticationManager: AuthenticationManager?) : Ba
 
     companion object {
         private val log: Logger = LoggerFactory.getLogger(JwtAuthorizationFilter::class.java)
+        private val signingKey = SecurityConstants.JWT_SECRET.toByteArray()
+        private fun String.removeBearerPrefix() = this.replace("Bearer ", "")
+
+        public fun getToken(request: HttpServletRequest): String? {
+            val token = request.getHeader(SecurityConstants.TOKEN_HEADER)
+            if (!token.isNullOrEmpty() && token.startsWith(SecurityConstants.TOKEN_PREFIX))
+                return token;
+            return null;
+        }
+
+
+        public fun getParsedToken(authToken: String): Jws<Claims>? =
+                Jwts.parser()
+                        .setSigningKey(signingKey)
+                        .parseClaimsJws(authToken.removeBearerPrefix())
+
+        public fun getUserName(authToken: String): String? =
+                getParsedToken(authToken.removeBearerPrefix())
+                        ?.getBody()
+                        ?.getSubject()
+
+        public fun getAuthority(authToken: String): MutableList<GrantedAuthority>? =
+                (getParsedToken(authToken.removeBearerPrefix())
+                        ?.getBody()
+                        ?.get("rol") as List<*>)
+                        .stream()
+                        .map { authorityList: Any? -> (authorityList as LinkedHashMap<*, *>).get("authority") as String }
+                        .map { authority: Any? -> SimpleGrantedAuthority(authority as String?) }
+                        .collect(Collectors.toList<GrantedAuthority>())
+
     }
 }
