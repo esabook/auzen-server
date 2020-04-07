@@ -1,4 +1,4 @@
-package com.auzen.model.error
+package com.auzen.controller.user
 
 import com.auzen.model.ErrorResponseModel
 
