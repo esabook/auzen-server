@@ -9,7 +9,9 @@ import org.springframework.security.core.userdetails.UserDetailsService
 
 
 class UserAuthService(val userRepository: UserRepository) : UserDetailsService {
-    val roles = AuthorityUtils.createAuthorityList("ROLE_ADMIN", "ROLE_USER");
+    companion object {
+        val roles = AuthorityUtils.createAuthorityList("ROLE_ADMIN", "ROLE_USER");
+    }
 
     override fun loadUserByUsername(username: String?): UserDetails {
         val user = userRepository?.getUserModelByAccountName(username.orEmpty())
