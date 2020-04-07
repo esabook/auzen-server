@@ -1,8 +1,8 @@
-package com.auzen.controller.error
+package com.auzen.model
 
 import java.util.*
 
-class ErrorResponseModel(
+open class ErrorResponseModel(
         val timestamp: Date = Date(),
         val type: String? = null,
         val title: String? = null,

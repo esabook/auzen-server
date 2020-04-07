@@ -1,6 +1,6 @@
 package com.auzen.controller
 
-import com.auzen.controller.error.ErrorResponseModel
+import com.auzen.model.ErrorResponseModel
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
@@ -20,5 +20,6 @@ class GlobalExceptionHandler {
 
         return ResponseEntity(errorDetail.asMap(), HttpStatus.INTERNAL_SERVER_ERROR)
     }
+
 
 }
