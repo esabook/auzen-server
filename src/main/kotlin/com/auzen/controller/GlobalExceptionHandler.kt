@@ -26,7 +26,7 @@ class GlobalExceptionHandler {
         val errorDetail = ErrorResponseModel(
                 type = "Error-${ex.statusCode.value()}",
                 title = ex.statusText,
-                message = ex.message,
+                message = ex.msg,
                 instance = req.getDescription(false))
         return ResponseEntity(errorDetail.asMap(), ex.statusCode)
     }
