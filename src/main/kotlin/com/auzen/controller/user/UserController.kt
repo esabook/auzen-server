@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.bcrypt.BCrypt
 import org.springframework.web.bind.annotation.*
+import java.util.regex.Pattern
 import javax.servlet.http.HttpServletRequest
 
 
@@ -58,7 +59,7 @@ class UserController {
                     token?.let {
                         return AuthResponseModel(
                                 token,
-                                "not set",
+                                "not-set",
                                 "not-set",
                                 JwtAuthenticationFilter.tokenLifeTime
                         )
@@ -76,6 +77,9 @@ class UserController {
 
     @PostMapping("/verify")
     fun postVerifyAccount(@RequestParam token: String, @RequestParam account_name: String): ResponseEntity<Any> {
+        if (token.isNullOrEmpty() || token.length < 10)
+            throw ClientException("Request info invalid", HttpStatus.BAD_REQUEST)
+
         val oldUserModel = userRepository.getUserModelsByVerifyTokenAndAccountName(token, account_name)
         oldUserModel?.let {
             it.verified = true
@@ -85,22 +89,33 @@ class UserController {
             return ResponseEntity(it, HttpStatus.OK)
         }
 
-        return ResponseEntity(HttpStatus.NOT_FOUND)
+        throw ClientException("Verification not processed", HttpStatus.NOT_FOUND)
     }
 
     @PostMapping("/register")
     @ApiOperation("Register a new user account")
     fun postRegister(@RequestBody data: UserRegisterRequestModel): ResponseEntity<UserRegisterResponseModel> {
 
+        with(data) {
+            val badRequestCode = HttpStatus.BAD_REQUEST;
+            if (accountName.isNullOrEmpty() || accountName.length < 4)
+                throw ClientException("Account name must be set with minimum 4 characters", badRequestCode)
+            if (password.isNullOrEmpty() || password.length < 4)
+                throw ClientException("Password must be set with minimum 4 characters", badRequestCode)
+            if (!Pattern.matches("^(.+)@(.+)$", email))
+                throw ClientException("Email invalid", badRequestCode)
+        }
+
+
         val newUserModel = UserModel(
-                accountName = data.account_name,
+                accountName = data.accountName,
                 password = data.password,
                 email = data.email
         )
 
-        val oldUserModel = userRepository.getUserModelByAccountName(data.account_name)
+        var oldUserModel = userRepository.getUserModelByAccountName(data.accountName)
         val responseModel = UserRegisterResponseModel(
-                account_name = data.account_name,
+                accountName = data.accountName,
                 registered = oldUserModel != null
         )
 
@@ -109,6 +124,10 @@ class UserController {
         } else {
             newUserModel.verifyToken = data.hashCode().toString() + newUserModel.hashCode().toString()
             userRepository.save(newUserModel)
+        }
+        oldUserModel = userRepository.getUserModelByAccountName(data.accountName)
+        oldUserModel?.let {
+            responseModel.registered = true
         }
 
         return ResponseEntity(responseModel, HttpStatus.OK)
