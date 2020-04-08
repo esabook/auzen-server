@@ -5,11 +5,19 @@ for more information.
 
 To run:
 
+install mongoDB
 ```
-$ ./gradlew bootRun
+$ docker pull mongo
 ```
 
 start mongoDB
 ```
-$ docker run --name auzen-db -d mongo
+$ docker run -d -p 27017:27107 --name auzen-db -d mongo
+```
+
+resolve mongoUri if you change db port, at
+`\src\main\kotlin\com\auzen\config\MongoConfig.kt`
+
+```
+$ ./gradlew bootRun
 ```
